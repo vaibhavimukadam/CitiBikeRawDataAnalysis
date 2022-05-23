@@ -1,0 +1,50 @@
+---
+title: "R Notebook"
+output: html_notebook
+author: Vaibhavi Mukadam
+---
+
+```{r}
+library(fpp2)
+#install.packages("forecast")
+library(forecast)
+library(TTR)
+library(lubridate)
+library(reshape2)
+library(tidyr)
+library(tseries)
+library(tidyverse)
+library(timetk)
+#install.packages("tidyverse")
+#install.packages("timetk")
+```
+
+```{r}
+monthdf = read.csv('timeseriesdatamonth.csv')
+#og = GLD
+tail(monthdf)
+monthdf$datetime = as.POSIXct(monthdf$date,format = "%Y-%m-%d")
+head(monthdf)
+```
+```{r}
+library(xts)
+mts <- xts(monthdf$count, order.by = monthdf$datetime)
+
+Acf(mts)
+ggAcf(mts)
+
+```
+```{r}
+mnfc = naive(mts,h=12) # forecasting h points 
+plot(mnfc) #plotting the forecast 
+plot.ts(mnfc$x,mnfc$fitted,xy.labels = FALSE,xy.lines = FALSE, main = "Actual vs Fitted") #actual
+plot.ts(mnfc$x,mnfc$residuals,xy.labels = FALSE,xy.lines = FALSE, main = "Actual vs Residual") #actual
+
+```
+
+```{r}
+f=forecast(mnfc)
+plot(mnfc)
+accuracy(mnfc)
+```
+
